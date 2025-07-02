@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Mail Generator</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bs-body-bg);
+      color: var(--bs-body-color);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .navbar {
+      padding: 1rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-card, .result-card {
+      background-color: var(--bs-body-bg);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      margin-top: 2rem;
+      border: 1px solid var(--bs-border-color-translucent);
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    .editable {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 12px;
+      min-height: 100px;
+      background-color: var(--bs-tertiary-bg);
+      transition: background-color 0.3s, color 0.3s;
+      word-break: break-word;
+    }
+
+    .editable:focus {
+      border-color: #4a90e2;
+      background-color: var(--bs-body-bg);
+      outline: none;
+    }
+
+    .btn-toggle {
+      border: none;
+      background: transparent;
+      font-size: 1.4rem;
+      color: white;
+    }
+
+    .logo-img {
+      height: 40px;
+      margin-right: 10px;
+    }
+
+    [data-bs-theme="dark"] body {
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+    }
+
+    [data-bs-theme="dark"] .form-card,
+    [data-bs-theme="dark"] .result-card {
+      background-color: #2c2c2c;
+      border-color: #444;
+      color: #e6e6e6;
+    }
+
+    [data-bs-theme="dark"] .editable {
+      background-color: #1e1e1e;
+      color: #f1f1f1;
+      border-color: #444;
+    }
+
+    [data-bs-theme="dark"] .btn-outline-primary:hover {
+      background-color: #2979ff;
+      color: white;
+    }
+
+    [data-bs-theme="dark"] .navbar {
+      background-color: #121212 !important;
+    }
+
+    [data-bs-theme="dark"] .logo-img {
+      filter: brightness(0) invert(1);
+    }
+  </style>
+
+  <!-- Auto theme detection -->
+  <script>
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const defaultTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-bs-theme', defaultTheme);
+  </script>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo-img">
+        <span>Mail Generator using GenAI</span>
+      </a>
+      <button class="btn-toggle" id="modeToggle" title="Toggle theme">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+  </nav>
+
+  <div class="container-sm px-3">
+    <div class="text-center mt-3">
+      <small class="text-muted">By Sanchit Panda - MITAOE Pune</small>
+    </div>
+
+    <div class="form-card">
+      <h4 class="text-center mb-4">Generate a Personalized Email</h4>
+      <form method="POST">
+        <div class="mb-3">
+          <label for="prompt" class="form-label">Describe the email purpose</label>
+          <textarea name="prompt" class="form-control" rows="3" placeholder="e.g., Write a follow-up email after interview" required></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="tone" class="form-label">Email Tone</label>
+          <input type="text" name="tone" class="form-control" placeholder="e.g., Friendly, Formal, Confident" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="length" class="form-label">Length</label>
+          <input type="text" name="length" class="form-control" placeholder="e.g., Short, Medium, Detailed" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="recipient" class="form-label">Recipient Name</label>
+          <input type="text" name="recipient" class="form-control" placeholder="e.g., HR Team, John" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">
+          <i class="fa-solid fa-paper-plane"></i> Generate Email
+        </button>
+      </form>
+    </div>
+
+    {% if email_subject %}
+    <div class="result-card mt-5">
+      <h5 class="mb-3 text-center">Generated Email</h5>
+
+      <div class="mb-3">
+        <strong>Subject:</strong>
+        <div id="subject" class="editable" contenteditable="true">{{ email_subject }}</div>
+        <button class="btn btn-outline-primary btn-sm btn-copy mt-2" onclick="copyToClipboard('subject')">
+          <i class="fa-regular fa-copy"></i> Copy Subject
+        </button>
+      </div>
+
+      <div>
+        <strong>Body:</strong>
+        <div id="body" class="editable" contenteditable="true" style="white-space: pre-wrap;">{{ email_body }}</div>
+        <button class="btn btn-outline-primary btn-sm btn-copy mt-2" onclick="copyToClipboard('body')">
+          <i class="fa-regular fa-copy"></i> Copy Body
+        </button>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <script>
+    function copyToClipboard(id) {
+      const el = document.getElementById(id);
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      document.execCommand('copy');
+      selection.removeAllRanges();
+      alert(`${id.charAt(0).toUpperCase() + id.slice(1)} copied!`);
+    }
+
+    const toggle = document.getElementById('modeToggle');
+    const html = document.documentElement;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const theme = html.getAttribute('data-bs-theme');
+      toggle.innerHTML = theme === 'dark'
+        ? '<i class="fas fa-sun"></i>'
+        : '<i class="fas fa-moon"></i>';
+    });
+
+    toggle.addEventListener('click', () => {
+      const current = html.getAttribute('data-bs-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-bs-theme', next);
+      localStorage.setItem('theme', next);
+      toggle.innerHTML = next === 'dark'
+        ? '<i class="fas fa-sun"></i>'
+        : '<i class="fas fa-moon"></i>';
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
