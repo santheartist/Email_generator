@@ -2,7 +2,6 @@
 
 This Flask-based web application generates professional, personalized emails using Google's Gemini AI (`gemini-2.0-flash-001`) through LangChain. It leverages a Retrieval-Augmented Generation (RAG) approach, retrieving relevant email templates from a FAISS vector store for context-aware email generation.
 
-🔗 **[Live Demo](https://mail-gen-ai.onrender.com/)** (Note: The application may take up to 50 seconds to load due to hosting constraints.)
 
 ## Features
 
@@ -148,5 +147,4 @@ pip install -r requirements.txt
 - [Bootstrap](https://getbootstrap.com/)
 - [FAISS](https://github.com/facebookresearch/faiss)
 
-## License
-This project is licensed under the MIT License for educational and non-commercial use.
+
