@@ -1,4 +1,4 @@
-# AI Email Generator using Generative AI (Gemini + LangChain + Flask)
+# AI Email Generator using Generative AI (OpenAI + LangChain + Flask)
 
 This Flask-based web application generates professional, personalized emails using OpenAI through LangChain. It leverages a Retrieval-Augmented Generation (RAG) approach, retrieving relevant email templates from a FAISS vector store for context-aware email generation.
 
