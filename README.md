@@ -3,7 +3,7 @@
 This Flask-based web application generates professional, personalized emails using OpenAI through LangChain. It leverages a Retrieval-Augmented Generation (RAG) approach, retrieving relevant email templates from a FAISS vector store for context-aware email generation.
 
 ## Deployment
-- Click on the URL: 🔗 `http://localhost:10000](https://ai-email-generator-ejwe.onrender.com`
+- Click on the URL: 🔗 `https://ai-email-generator-ejwe.onrender.com`
 ## Features
 
 - Generates emails based on user input (prompt, recipient, tone, and length).
