@@ -73,9 +73,9 @@ pip install -r requirements.txt
   Hey [Hiring Manager's Name],
   ...
   ```
-![Form Interface](mail-gen-main/screenshots/i.png)
+![Form Interface](screenshots/i.png)
 
-![Generated Email](mail-gen-main/screenshots/ii.png)
+![Generated Email](screenshots/ii.png)
 
 ## File Structure
 ```
